@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Management System</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Toastify CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .badge-tag {
+            background-color: #e9ecef;
+            color: #495057;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            font-weight: normal;
+        }
+        .action-btn {
+            min-width: 100px;
+        }
+        #resumeTable {
+            font-size: 0.9rem;
+        }
+        .file-upload-area {
+            border: 2px dashed #dee2e6;
+            border-radius: 5px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .file-upload-area:hover {
+            border-color: #0d6efd;
+            background-color: #f8f9fa;
+        }
+        .stats-card {
+            color: white;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-4">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3">
+                <i class="bi bi-file-earmark-person me-2"></i>Resume Management System
+            </h1>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                <i class="bi bi-upload me-2"></i>Upload Resume
+            </button>
+        </div>
+
+        <!-- Search and Filter -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search resumes...">
+                    <button class="btn btn-outline-secondary" type="button" id="clearSearch">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="d-flex gap-2">
+                    <select class="form-select" id="filterByTag">
+                        <option value="">All Tags</option>
+                    </select>
+                    <select class="form-select" id="sortBy">
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="name_asc">Name (A-Z)</option>
+                        <option value="name_desc">Name (Z-A)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="stats-card bg-primary">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Resumes</h5>
+                        <h2 id="totalResumes" class="mb-0">0</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card bg-success">
+                    <div class="card-body">
+                        <h5 class="card-title">This Week</h5>
+                        <h2 id="weeklyUploads" class="mb-0">0</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card bg-info">
+                    <div class="card-body">
+                        <h5 class="card-title">Unique Tags</h5>
+                        <h2 id="uniqueTags" class="mb-0">0</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card bg-warning text-dark">
+                    <div class="card-body">
+                        <h5 class="card-title">Storage Used</h5>
+                        <h2 id="storageUsed" class="mb-0">0 MB</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resumes Table -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Resumes</h5>
+                <div class="d-flex gap-2">
+                    <button id="refreshBtn" class="btn btn-sm btn-outline-secondary">
+                        <i class="bi bi-arrow-clockwise"></i> Refresh
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="resumeTable">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Tags</th>
+                                <th>Uploaded</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resumeTableBody">
+                            <tr>
+                                <td colspan="5" class="text-center py-5">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <nav aria-label="Page navigation" class="mt-3">
+                    <ul class="pagination justify-content-center" id="pagination">
+                        <!-- Pagination will be added here -->
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Modal -->
+    <div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="uploadModalLabel">Upload New Resume</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="uploadForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="name" class="form-label">Candidate Name *</label>
+                                <input type="text" class="form-control" id="name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="contact" class="form-label">Contact Number</label>
+                                <input type="text" class="form-control" id="contact">
+                            </div>
+                         
+                            <div class="col-12">
+            <label for="summary" class="form-label">Professional Summary</label>
+            <textarea class="form-control" id="summary" rows="4" placeholder="Brief professional overview..."></textarea>
+        </div>
+                           <div class="col-md-8">
+          <input type="file" id="resumeFile" class="form-control" accept=".pdf,.doc,.docx" required />
+        </div>
+        <div class="col-md-4">
+          <button type="submit" class="btn btn-primary w-100">Upload Resume</button>
+        </div>
+                        <div class="mt-4" id="tagPreviewContainer" style="display: none;">
+                            <h6>Extracted Tags:</h6>
+                            <div id="tagPreview" class="d-flex flex-wrap gap-2"></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" form="uploadForm" class="btn btn-primary" id="uploadBtn">
+                        <span class="spinner-border spinner-border-sm" id="uploadSpinner" style="display: none;"></span>
+                        <span id="uploadText">Upload Resume</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Tags Modal -->
+    <div class="modal fade" id="tagsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Resume Tags</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="tagsContainer" class="d-flex flex-wrap gap-2"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Email Profile Modal -->
+    <div class="modal fade" id="emailModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Email Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="emailForm">
+                        <div class="mb-3">
+                            <label for="recipientEmail" class="form-label">Recipient Email *</label>
+                            <input type="email" class="form-control" id="recipientEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="emailSubject" class="form-label">Subject</label>
+                            <input type="text" class="form-control" id="emailSubject" value="Candidate Profile">
+                        </div>
+                        <div class="mb-3">
+                            <label for="emailMessage" class="form-label">Message</label>
+                            <textarea class="form-control" id="emailMessage" rows="5">Please find the attached candidate profile.</textarea>
+                        </div>
+                        <input type="hidden" id="resumeIdForEmail">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" form="emailForm" class="btn btn-primary" id="sendEmailBtn">
+                        <span class="spinner-border spinner-border-sm" id="emailSpinner" style="display: none;"></span>
+                        <span id="emailBtnText">Send Email</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Main Application Script -->
+    <script src="../static/js/app.js"></script>
+</body>
+</html>

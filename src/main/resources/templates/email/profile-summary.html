@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${subject}">Profile Summary </title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; }
+        .header { background-color: #f5f5f5; padding: 20px; }
+        .section { margin: 15px 0; }
+        .tag { display: inline-block; background: #e0e0e0; padding: 3px 8px; margin: 2px; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 th:text="${'Profile: ' + candidate.name}"></h1>
+    </div>
+    
+    <div class="container">
+        <div class="section">
+            <h2>Contact Information</h2>
+            <p>Email: <span th:text="${candidate.email}">N/A</span></p>
+            <p>Phone: <span th:text="${candidate.contact}">N/A</span></p>
+            <p>Visa Status: <span th:text="${candidate.email}">N/A</span></p>
+            <p>Location: <span th:text="${candidate.contact}">N/A</span></p>
+            <p>Availaibility: <span th:text="${candidate.contact}">N/A</span></p>
+
+        </div>
+        
+        <div class="section" th:if="${candidate.summary}">
+            <h2>Professional Summary</h2>
+            <p th:text="${candidate.summary}"></p>
+        </div>
+        
+        <div class="section" th:if="${not #lists.isEmpty(candidate.tags)}">
+            <h2>Key Skills</h2>
+            <div>
+                <span th:each="tag : ${candidate.tags}" class="tag" th:text="${tag}"></span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
