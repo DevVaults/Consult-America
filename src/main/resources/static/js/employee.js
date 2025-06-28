@@ -8,7 +8,7 @@
  * - Loading indicators
  */
 
-const API_BASE = "http://localhost:8080/api/resumes";
+const API_BASE = "http://localhost:8080/employee/resumes";
 let currentResumes = [];
 
 // Document Ready Handler
@@ -77,25 +77,14 @@ $('#filterByTags').on('change', function() {
 
 
 
-function loadStats() {
-    fetch(API_BASE +"/stats")
-        .then((res) => res.json())
-        .then((data) => {
-            document.getElementById("totalResumes").textContent = data.totalResumes || 0;
-            document.getElementById("weeklyUploads").textContent = data.weeklyUploads || 0;
-         //   document.getElementById("storageUsed").textContent = `${data.storageUsedMB || 0} MB`;
-        })
-        .catch((err) => {
-            console.error("Failed to load stats:", err);
-        });
-}
+
 
 
 function initializeApplication() {
     loadResumes();
     setupEventListeners();
     setupSearchFunctionality();
-    loadStats()
+   // loadStats()
 }
 
 function setupEventListeners() {
@@ -146,7 +135,7 @@ function handleResumeUpload() {
         success: function (response) {
             showTags(response.tags);
             loadResumes();
-            loadStats()
+           // loadStats()
             showToast("Resume uploaded successfully!", "success");
             $("#uploadForm")[0].reset();
             $("#filePreview").text("No file selected").addClass("text-muted");
@@ -160,7 +149,7 @@ function handleResumeUpload() {
         },
         complete: function () {
             showLoading(false, "upload");
-            loadStats()
+           // loadStats()
         },
     });
 }
@@ -216,16 +205,17 @@ function showTags(tags) {
 function loadResumes() {
     showLoading(true, "table");
 console.log(API_BASE); // 👈 Logs the API base URL to inspect
-    $.get(API_BASE)
+    $.get(API_BASE + "/me")
     .done(function (resumes) {
         console.log("Received resumes response:", resumes); // 👈 Logs the response to inspect
 
         // Safely extract array in case response is wrapped in an object
-        currentResumes = Array.isArray(resumes?.content) ? resumes.content : [];
+        currentResumes = Array.isArray(resumes) ? resumes : [];
+
 
         console.log("currentResumes response:", currentResumes);
         renderResumes(currentResumes);
-        loadStats()
+       // loadStats()
     })
     .fail(function () {
         showToast("Failed to load resumes. Please try again.", "error");
@@ -307,7 +297,14 @@ function showEmailDialog(resumeId) {
     });
 }
 
-
+//UI Integration
+function setupEmailButton(resumeId) {
+    const emailBtn = document.createElement('button');
+    emailBtn.className = 'btn btn-sm btn-success ms-2';
+    emailBtn.innerHTML = '<i class="bi bi-envelope"></i> Email Profile';
+    emailBtn.onclick = () => showEmailDialog(resumeId);
+    return emailBtn;
+}
 // this function is working now
 
 function setupEmailButton(resumeId) {
@@ -333,6 +330,7 @@ function renderResumes(resumes) {
     }
     
     resumes.forEach(resume => {
+        console.log(resume);
         const date = resume.uploadedAt ? 
             new Date(resume.uploadedAt).toLocaleString() : 
             "N/A";
@@ -421,7 +419,7 @@ function confirmDeleteResume(id) {
     }).then((result) => {
         if (result.isConfirmed) {
             deleteResume(id);
-            loadStats()
+          //  loadStats()
         }
     });
 }

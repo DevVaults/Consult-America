@@ -11,6 +11,8 @@
     <!-- Toastify CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
     <style>
         body {
             background-color: #f8f9fa;
@@ -53,8 +55,48 @@
             color: white;
             border-radius: 8px;
         }
+        .select2-container--default .select2-selection--multiple {
+            border: 1px solid #ced4da;
+            border-radius: 0.5rem;
+            min-height: 42px;
+            padding: 4px 8px;
+        }
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            background-color: #0d6efd;
+            border: none;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            margin-top: 4px;
+        }
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+            color: white;
+            margin-right: 6px;
+        }
+        .selected-tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        .tag-badge {
+            display: flex;
+            align-items: center;
+            background-color: #0d6efd;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        .tag-remove {
+            margin-left: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
     </style>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 </head>
+
 <body>
     <div class="container py-4">
         <!-- Header -->
@@ -65,6 +107,11 @@
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">
                 <i class="bi bi-upload me-2"></i>Upload Resume
             </button>
+             <form method="post" action="/logout" style="display: inline;">
+            <button type="submit" class="btn btn-danger">
+                <i class="bi bi-box-arrow-right me-2"></i>Logout
+            </button>
+        </form>
         </div>
 
         <!-- Search and Filter -->
@@ -79,16 +126,62 @@
                 </div>
             </div>
             <div class="col-md-6">
-                <div class="d-flex gap-2">
-                    <select class="form-select" id="filterByTag">
-                        <option value="">All Tags</option>
+                <div class="d-flex flex-column gap-2">
+                    <!-- <label for="filterByTags" class="form-label fw-bold">Filter by Tags:</label> -->
+                    <select class="form-select" id="filterByTags" multiple>
+                        <option value="Java">Java</option>
+                        <option value="Python">Python</option>
+                        <option value="JavaScript">JavaScript</option>
+                        <option value="Spring">Spring</option>
+                        <option value="Spring Boot">Spring Boot</option>
+                        <option value="React">React</option>
+                        <option value="SQL">SQL</option>
+                        <option value="MySQL">MySQL</option>
+                        <option value="MSSQL">MSSQL</option>
+                        <option value="MongoDB">MongoDB</option>
+                        <option value="AWS">AWS</option>
+                        <option value="Azure">Azure</option>
+                        <option value="GCP">GCP</option>
+                        <option value="Docker">Docker</option>
+                        <option value="Kubernetes">Kubernetes</option>
+                        <option value="Apache Kafka">Apache Kafka</option>
+                        <option value="GitLab">GitLab</option>
+                        <option value="Jenkins">Jenkins</option>
+                        <option value="SonarQube">SonarQube</option>
+                        <option value="Apigee">Apigee</option>
+                        <option value="Postman">Postman</option>
+                        <option value="Swagger">Swagger</option>
+                        <option value="LIMS">LIMS</option>
+                        <option value="SAP ATTP">SAP ATTP</option>
+                        <option value="TraceLink">TraceLink</option>
+                        <option value="ServiceNow">ServiceNow</option>
+                        <option value="Cucumber">Cucumber</option>
+                        <option value="Jira">Jira</option>
+                        <option value="Log4j">Log4j</option>
+                        <option value="ETL">ETL</option>
+                        <option value="Data Integrity">Data Integrity</option>
+                        <option value="Master Data Management">Master Data Management</option>
+                        <option value="Tableau">Tableau</option>
+                        <option value="Power BI">Power BI</option>
+                        <option value="Serialization">Serialization</option>
+                        <option value="DSCSA">DSCSA</option>
+                        <option value="EPCIS">EPCIS</option>
+                        <option value="GS1">GS1</option>
+                        <option value="21 CFR Part 11">21 CFR Part 11</option>
+                        <option value="GxP">GxP</option>
+                        <option value="CAPA">CAPA</option>
+                        <option value="SOP Development">SOP Development</option>
+                        <option value="IQ">IQ</option>
+                        <option value="OQ">OQ</option>
+                        <option value="PQ">PQ</option>
+                        <option value="Validation">Validation</option>
+                        <option value="Audit">Audit</option>
+                        <option value="Risk Assessment">Risk Assessment</option>
+                        <option value="Compliance">Compliance</option>
+                        <option value="Communication">Communication</option>
+                        <option value="Leadership">Leadership</option>
                     </select>
-                    <select class="form-select" id="sortBy">
-                        <option value="newest">Newest First</option>
-                        <option value="oldest">Oldest First</option>
-                        <option value="name_asc">Name (A-Z)</option>
-                        <option value="name_desc">Name (Z-A)</option>
-                    </select>
+                    <div class="selected-tags-container" id="selectedTagsContainer"></div>
                 </div>
             </div>
         </div>
@@ -111,22 +204,8 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="stats-card bg-info">
-                    <div class="card-body">
-                        <h5 class="card-title">Unique Tags</h5>
-                        <h2 id="uniqueTags" class="mb-0">0</h2>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stats-card bg-warning text-dark">
-                    <div class="card-body">
-                        <h5 class="card-title">Storage Used</h5>
-                        <h2 id="storageUsed" class="mb-0">0 MB</h2>
-                    </div>
-                </div>
-            </div>
+            
+           
         </div>
 
         <!-- Resumes Table -->
@@ -196,15 +275,16 @@
                             </div>
                          
                             <div class="col-12">
-            <label for="summary" class="form-label">Professional Summary</label>
-            <textarea class="form-control" id="summary" rows="4" placeholder="Brief professional overview..."></textarea>
-        </div>
-                           <div class="col-md-8">
-          <input type="file" id="resumeFile" class="form-control" accept=".pdf,.doc,.docx" required />
-        </div>
-        <div class="col-md-4">
-          <button type="submit" class="btn btn-primary w-100">Upload Resume</button>
-        </div>
+                                <label for="summary" class="form-label">Professional Summary</label>
+                                <textarea class="form-control" id="summary" rows="4" placeholder="Brief professional overview..."></textarea>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="file" id="resumeFile" class="form-control" accept=".pdf,.doc,.docx" required />
+                            </div>
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-primary w-100">Upload Resume</button>
+                            </div>
+                        </div>
                         <div class="mt-4" id="tagPreviewContainer" style="display: none;">
                             <h6>Extracted Tags:</h6>
                             <div id="tagPreview" class="d-flex flex-wrap gap-2"></div>
@@ -281,9 +361,54 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- Main Application Script -->
-    <script src="../static/js/app.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Initialize Select2
+            $('#filterByTags').select2({
+                placeholder: "Select tags to filter",
+                allowClear: true,
+                width: '100%'
+            });
+
+            // Function to update the selected tags display
+            function updateSelectedTags() {
+                const selectedTags = $('#filterByTags').val() || [];
+                const container = $('#selectedTagsContainer');
+                container.empty();
+
+                selectedTags.forEach(tag => {
+                    const tagElement = $(`
+                        <div class="tag-badge">
+                            ${tag}
+                            <span class="tag-remove" data-tag="${tag}">×</span>
+                        </div>
+                    `);
+                    container.append(tagElement);
+                });
+
+                // Add click event for remove buttons
+                $('.tag-remove').on('click', function() {
+                    const tagToRemove = $(this).data('tag');
+                    const currentTags = $('#filterByTags').val() || [];
+                    const updatedTags = currentTags.filter(tag => tag !== tagToRemove);
+                    
+                    $('#filterByTags').val(updatedTags).trigger('change');
+                    updateSelectedTags();
+                });
+            }
+
+            // Update selected tags when selection changes
+            $('#filterByTags').on('change', function() {
+                updateSelectedTags();
+            });
+
+            // Initial update
+            updateSelectedTags();
+        });
+    </script>
+    
+    <script src="/js/app.js"></script>
 </body>
 </html>

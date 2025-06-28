@@ -18,44 +18,50 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
+import org.springframework.security.core.Authentication;
 import consult_america.demo.model.Resume;
 import consult_america.demo.model.ResumeDTO;
+import consult_america.demo.model.User;
+import consult_america.demo.repository.UserRepository;
 import consult_america.demo.service.EmailService;
 import consult_america.demo.service.ResumeService;
 import consult_america.demo.service.ResumeTagExtractionService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/api/resumes")
+@RequestMapping("/resumes")
 public class ResumeController {
 
     private final ResumeService resumeService;
     private final ResumeTagExtractionService tagExtractionService;
-     private final EmailService emailService;
+    private final EmailService emailService;
+    private final UserRepository userRepository;
     // private final FileTextExtractor fileExtractor;
 
     @Autowired
     public ResumeController(ResumeService resumeService,
-                          ResumeTagExtractionService tagExtractionService,EmailService emailService
-                          /*, FileTextExtractor fileExtractor*/) {
+            ResumeTagExtractionService tagExtractionService, EmailService emailService, UserRepository userRepository
+    /*, FileTextExtractor fileExtractor*/) {
         this.resumeService = resumeService;
         this.tagExtractionService = tagExtractionService;
         this.emailService = emailService;
+        this.userRepository = userRepository;
         // this.fileExtractor = fileExtractor;
     }
 
-    @PostMapping("/upload") 
+    @PostMapping("/upload")
     public ResponseEntity<?> uploadResume(
             @RequestParam("file") MultipartFile file,
             @RequestParam("name") String name,
@@ -72,7 +78,6 @@ public class ResumeController {
             // Extract text from file
             // String resumeText = FileEditor.extractText(file);
             //String resumeText = ; // TODO: Implement text extraction logic or use a valid utility
-
             // Extract tags from text
             List<String> tags = tagExtractionService.extractTagsFromText(summary);
 
@@ -86,7 +91,7 @@ public class ResumeController {
             resume.setFileSize(file.getSize());
             resume.setData(file.getBytes());
             resume.setUploadedAt(LocalDateTime.now());
-            resume.setSummary(summary); 
+            resume.setSummary(summary);
             resume.setTags(tags);
 
             Resume savedResume = resumeService.saveResume(resume);
@@ -119,22 +124,56 @@ public class ResumeController {
     }
 
     @GetMapping("/stats")
-public ResponseEntity<Map<String, Object>> getStats() {
-    Map<String, Object> stats = new HashMap<>();
-    stats.put("totalResumes", resumeService.getTotalResumes());
-    stats.put("weeklyUploads", resumeService.getUploadsThisWeek());
-    stats.put("storageUsedMB", resumeService.getStorageUsedInMB());
-    return ResponseEntity.ok(stats);
-}
+    public ResponseEntity<Map<String, Object>> getStats() {
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("totalResumes", resumeService.getTotalResumes());
+        stats.put("weeklyUploads", resumeService.getUploadsThisWeek());
+        stats.put("storageUsedMB", resumeService.getStorageUsedInMB());
+        return ResponseEntity.ok(stats);
+    }
 
+    // @GetMapping
+    // public ResponseEntity<Page<ResumeDTO>> getAllResumes(
+    //         @PageableDefault(size = 100) Pageable pageable,
+    //         @RequestParam(required = false) String search) {
+    //     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    //     System.out.print("auth.getName() = " + auth.getName());
+    //     auth.getCredentials();
+    //     // ✅ manual fetch
+    //     Page<Resume> resumes = search != null
+    //             ? resumeService.searchResumes(search, pageable)
+    //             : resumeService.getAllResumes(pageable);
+    //     Page<ResumeDTO> resumeDTOs = resumes.map(this::mapToResumeDTO);
+    //     return ResponseEntity.ok(resumeDTOs);
+    // }
     @GetMapping
     public ResponseEntity<Page<ResumeDTO>> getAllResumes(
-            @PageableDefault(size = 10) Pageable pageable,
+            @PageableDefault(size = 100) Pageable pageable,
             @RequestParam(required = false) String search) {
 
-        Page<Resume> resumes = search != null ?
-                resumeService.searchResumes(search, pageable) :
-                resumeService.getAllResumes(pageable);
+        // Get authenticated user
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        String userEmail = auth.getName(); // Will be email/username if authenticated
+        System.out.println("Logged in user: " + userEmail);
+
+        // Fetch user from database
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Page<Resume> resumes;
+
+        if ("ADMIN".equalsIgnoreCase(user.getRole().getName())) {
+            // Admin sees all resumes
+            resumes = (search != null && !search.isBlank())
+                    ? resumeService.searchResumes(search, pageable)
+                    : resumeService.getAllResumes(pageable);
+        } else {
+            // Candidate sees only their own resumes
+            resumes = (search != null && !search.isBlank())
+                    ? resumeService.getResumesByUploader(userEmail, search, pageable)
+                    : resumeService.searchResumesByUploader(userEmail, pageable);
+        }
 
         Page<ResumeDTO> resumeDTOs = resumes.map(this::mapToResumeDTO);
         return ResponseEntity.ok(resumeDTOs);
@@ -220,7 +259,7 @@ public ResponseEntity<Map<String, Object>> getStats() {
         dto.setFileType(resume.getFileType().orElse(null));
         dto.setFileSize(resume.getFileSize());
         dto.setTags(resume.getTags());
-        
+
         // Set download URL
         String downloadUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/api/resumes/")
@@ -228,60 +267,60 @@ public ResponseEntity<Map<String, Object>> getStats() {
                 .path("/download")
                 .toUriString();
         dto.setDownloadUrl(downloadUrl);
-        
+
         return dto;
     }
 
-  @PostMapping("/{id}/send-profile")
-public ResponseEntity<?> sendProfileEmail(
-        @PathVariable Long id,
-        @RequestParam String recipientEmail,
-        @RequestParam String subject,
-        @RequestParam(required = false) String customMessage) {
+    @PostMapping("/{id}/send-profile")
+    public ResponseEntity<?> sendProfileEmail(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> payload) {
+        String recipientEmail = payload.get("recipientEmail");
+        String subject = payload.get("subject");
+        String customMessage = payload.getOrDefault("customMessage", "");
+        return resumeService.getResumeById(id)
+                .map(resume -> {
+                    try {
+                        Map<String, Object> variables = new HashMap<>();
+                        variables.put("subject", subject);
+                        variables.put("candidate", Map.of(
+                                "name", resume.getName(),
+                                "email", resume.getEmail(),
+                                "contact", resume.getContact(),
+                                "summary", resume.getSummary() != null && !resume.getSummary().isBlank()
+                                ? resume.getSummary()
+                                : customMessage,
+                                "tags", resume.getTags()
+                        ));
 
-    return resumeService.getResumeById(id)
-        .map(resume -> {
-            try {
-                Map<String, Object> variables = new HashMap<>();
-                variables.put("subject", subject);
-                variables.put("candidate", Map.of(
-                    "name", resume.getName(),
-                    "email", resume.getEmail(),
-                    "contact", resume.getContact(),
-                    "summary", resume.getSummary() != null && !resume.getSummary().isBlank()
-                        ? resume.getSummary()
-                        : customMessage,
-                    "tags", resume.getTags()
-                ));
+                        // Create a temporary file for resume attachment
+                        File tempFile = File.createTempFile("resume-", "-" + resume.getFileName());
+                        try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+                            fos.write(resume.getData());
+                        }
 
-                // Create a temporary file for resume attachment
-                File tempFile = File.createTempFile("resume-", "-" + resume.getFileName());
-                try (FileOutputStream fos = new FileOutputStream(tempFile)) {
-                    fos.write(resume.getData());
-                }
+                        emailService.sendProfileEmail(
+                                recipientEmail,
+                                subject,
+                                variables,
+                                tempFile
+                        );
 
-                emailService.sendProfileEmail(
-                    recipientEmail,
-                    subject,
-                    variables,
-                    tempFile
-                );
+                        return ResponseEntity.ok(Map.of(
+                                "message", "Email sent successfully",
+                                "to", recipientEmail
+                        ));
 
-                return ResponseEntity.ok(Map.of(
-                    "message", "Email sent successfully",
-                    "to", recipientEmail
-                ));
-
-            } catch (Exception e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of(
-                        "error", "Failed to send email",
-                        "details", e.getMessage()
-                    ));
-            }
-        })
-        .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body(Map.of("error", "Resume not found with ID: " + id)));
-}
+                    } catch (Exception e) {
+                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                .body(Map.of(
+                                        "error", "Failed to send email",
+                                        "details", e.getMessage()
+                                ));
+                    }
+                })
+                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("error", "Resume not found with ID: " + id)));
+    }
 
 }

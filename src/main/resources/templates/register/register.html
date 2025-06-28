@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Register</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f7fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .register-form {
+            background-color: #ffffff;
+            padding: 30px 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        .register-form h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .register-form label {
+            display: block;
+            margin-bottom: 10px;
+            color: #444;
+            font-weight: bold;
+        }
+        .register-form input,
+        .register-form select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .register-form button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .register-form button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <form class="register-form" method="post" th:action="@{/register}" th:object="${user}">
+        <h2>Register</h2>
+
+        <label for="name">Name</label>
+        <input type="text" th:field="*{name}" id="name" placeholder="Enter your name" />
+
+        <label for="email">Email</label>
+        <input type="email" th:field="*{email}" id="email" placeholder="Enter your email" />
+
+        <label for="password">Password</label>
+        <input type="password" th:field="*{password}" id="password" placeholder="Create a password" />
+
+        <label for="role">Role</label>
+        <select th:field="*{role.name}" id="role">
+            <option th:each="r : ${roles}" th:value="${r.name}" th:text="${r.name}">Role</option>
+        </select>
+
+        <button type="submit">Register</button>
+    </form>
+</body>
+</html>

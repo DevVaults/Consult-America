@@ -1,0 +1,9 @@
+<nav class="navbar bg-light mb-4">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/">Resume Management</a>
+    <div class="d-flex">
+      <span th:text="${#authentication.name}">User</span>
+      <a href="/logout" class="btn btn-outline-secondary btn-sm ms-2">Logout</a>
+    </div>
+  </div>
+</nav>

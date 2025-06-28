@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidate Dashboard - Resume Management System</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Toastify CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .badge-tag {
+            background-color: #e9ecef;
+            color: #495057;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            font-weight: normal;
+        }
+        .action-btn {
+            min-width: 100px;
+        }
+        #resumeTable {
+            font-size: 0.9rem;
+        }
+        .file-upload-area {
+            border: 2px dashed #dee2e6;
+            border-radius: 5px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .file-upload-area:hover {
+            border-color: #0d6efd;
+            background-color: #f8f9fa;
+        }
+        .welcome-card {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-4">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3">
+                <i class="bi bi-person-circle me-2"></i>Candidate Dashboard
+            </h1>
+            <form method="post" action="/logout" style="display: inline;">
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-box-arrow-right me-2"></i>Logout
+                </button>
+            </form>
+        </div>
+
+        <!-- Welcome Card -->
+        <div class="card welcome-card mb-4">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h3 class="card-title">Welcome, <span id="candidateName">Candidate</span>!</h3>
+                        <p class="card-text">You can upload and manage your resumes here.</p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                            <i class="bi bi-upload me-2"></i>Upload New Resume
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Resumes -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">My Resumes</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="resumeTable">
+                        <thead>
+                            <tr>
+                                <th>File Name</th>
+                                <th>Email</th>
+                                <th>Tags</th>
+                                <th>Uploaded</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resumeTableBody">
+                            <tr>
+                                <td colspan="4" class="text-center py-5">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Card
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Resumes</h5>
+                        <h2 id="totalResumes" class="mb-0">0</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+ <!-- Upload Modal -->
+    <div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="uploadModalLabel">Upload New Resume</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="uploadForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="name" class="form-label">Candidate Name *</label>
+                                <input type="text" class="form-control" id="name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="contact" class="form-label">Contact Number</label>
+                                <input type="text" class="form-control" id="contact">
+                            </div>
+                         
+                            <div class="col-12">
+                                <label for="summary" class="form-label">Professional Summary</label>
+                                <textarea class="form-control" id="summary" rows="4" placeholder="Brief professional overview..."></textarea>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="file" id="resumeFile" class="form-control" accept=".pdf,.doc,.docx" required />
+                            </div>
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-primary w-100">Upload Resume</button>
+                            </div>
+                        </div>
+                        <div class="mt-4" id="tagPreviewContainer" style="display: none;">
+                            <h6>Extracted Tags:</h6>
+                            <div id="tagPreview" class="d-flex flex-wrap gap-2"></div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" form="uploadForm" class="btn btn-primary" id="uploadBtn">
+                        <span class="spinner-border spinner-border-sm" id="uploadSpinner" style="display: none;"></span>
+                        <span id="uploadText">Upload Resume</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    
+    <script>
+        $(document).ready(function () {
+            // Initialize Select2
+            $('#filterByTags').select2({
+                placeholder: "Select tags to filter",
+                allowClear: true,
+                width: '100%'
+            });
+
+            // Function to update the selected tags display
+            function updateSelectedTags() {
+                const selectedTags = $('#filterByTags').val() || [];
+                const container = $('#selectedTagsContainer');
+                container.empty();
+
+                selectedTags.forEach(tag => {
+                    const tagElement = $(`
+                        <div class="tag-badge">
+                            ${tag}
+                            <span class="tag-remove" data-tag="${tag}">×</span>
+                        </div>
+                    `);
+                    container.append(tagElement);
+                });
+
+                // Add click event for remove buttons
+                $('.tag-remove').on('click', function() {
+                    const tagToRemove = $(this).data('tag');
+                    const currentTags = $('#filterByTags').val() || [];
+                    const updatedTags = currentTags.filter(tag => tag !== tagToRemove);
+                    
+                    $('#filterByTags').val(updatedTags).trigger('change');
+                    updateSelectedTags();
+                });
+            }
+
+            // Update selected tags when selection changes
+            $('#filterByTags').on('change', function() {
+                updateSelectedTags();
+            });
+
+            // Initial update
+            updateSelectedTags();
+        });
+    </script>
+    
+    <script src="/js/employee.js"></script>
+   
+</body>
+</html>

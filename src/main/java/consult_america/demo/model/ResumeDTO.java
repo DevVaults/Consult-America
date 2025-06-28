@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class ResumeDTO {
+
     private Long id;
     private String name;
     private String email;
@@ -14,13 +15,16 @@ public class ResumeDTO {
     private LocalDateTime uploadedAt;
     private List<String> tags;
     private String downloadUrl;
+    private String summary;
 
-    // Constructors
-    public ResumeDTO() {}
+    // === Constructors ===
 
-    public ResumeDTO(Long id, String name, String email, String contact, 
-                    String fileName, String fileType, Long fileSize,
-                    LocalDateTime uploadedAt, List<String> tags) {
+    public ResumeDTO() {
+    }
+
+    public ResumeDTO(Long id, String name, String email, String contact,
+                     String fileName, String fileType, Long fileSize,
+                     LocalDateTime uploadedAt, List<String> tags, String summary) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -30,88 +34,54 @@ public class ResumeDTO {
         this.fileSize = fileSize;
         this.uploadedAt = uploadedAt;
         this.tags = tags;
+        this.summary = summary;
     }
 
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
+    // === Getters and Setters ===
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public Long getId() { return id; }
 
-    public String getName() {
-        return name;
-    }
+    public void setId(Long id) { this.id = id; }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public String getName() { return name; }
 
-    public String getEmail() {
-        return email;
-    }
+    public void setName(String name) { this.name = name; }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+    public String getEmail() { return email; }
 
-    public String getContact() {
-        return contact;
-    }
+    public void setEmail(String email) { this.email = email; }
 
-    public void setContact(String contact) {
-        this.contact = contact;
-    }
+    public String getContact() { return contact; }
 
-    public String getFileName() {
-        return fileName;
-    }
+    public void setContact(String contact) { this.contact = contact; }
 
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
+    public String getFileName() { return fileName; }
 
-    public String getFileType() {
-        return fileType;
-    }
+    public void setFileName(String fileName) { this.fileName = fileName; }
 
-    public void setFileType(String fileType) {
-        this.fileType = fileType;
-    }
+    public String getFileType() { return fileType; }
 
-    public Long getFileSize() {
-        return fileSize;
-    }
+    public void setFileType(String fileType) { this.fileType = fileType; }
 
-    public void setFileSize(Long fileSize) {
-        this.fileSize = fileSize;
-    }
+    public Long getFileSize() { return fileSize; }
 
-    public LocalDateTime getUploadedAt() {
-        return uploadedAt;
-    }
+    public void setFileSize(Long fileSize) { this.fileSize = fileSize; }
 
-    public void setUploadedAt(LocalDateTime uploadedAt) {
-        this.uploadedAt = uploadedAt;
-    }
+    public LocalDateTime getUploadedAt() { return uploadedAt; }
 
-    public List<String> getTags() {
-        return tags;
-    }
+    public void setUploadedAt(LocalDateTime uploadedAt) { this.uploadedAt = uploadedAt; }
 
-    public void setTags(List<String> tags) {
-        this.tags = tags;
-    }
+    public List<String> getTags() { return tags; }
 
-    public String getDownloadUrl() {
-        return downloadUrl;
-    }
+    public void setTags(List<String> tags) { this.tags = tags; }
 
-    public void setDownloadUrl(String downloadUrl) {
-        this.downloadUrl = downloadUrl;
-    }
+    public String getDownloadUrl() { return downloadUrl; }
+
+    public void setDownloadUrl(String downloadUrl) { this.downloadUrl = downloadUrl; }
+
+    public String getSummary() { return summary; }
+
+    public void setSummary(String summary) { this.summary = summary; }
 
     @Override
     public String toString() {
@@ -126,10 +96,7 @@ public class ResumeDTO {
                 ", uploadedAt=" + uploadedAt +
                 ", tags=" + tags +
                 ", downloadUrl='" + downloadUrl + '\'' +
+                ", summary='" + summary + '\'' +
                 '}';
-    }
-
-    public void setSummary(Object summary) {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

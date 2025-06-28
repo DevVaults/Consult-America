@@ -1,6 +1,5 @@
 package consult_america.demo.model;
 
-
 import java.time.LocalDate;
 
 import jakarta.persistence.Entity;
@@ -12,6 +11,7 @@ import jakarta.persistence.ManyToOne;
 
 @Entity
 public class Payslip {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,12 +24,7 @@ public class Payslip {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public double getSalary() {
-        return workHours * hourlyRate;
-    }
-
-    // Getters & Setters
-
+    // === Getters and Setters ===
     public Long getId() {
         return id;
     }
@@ -68,5 +63,21 @@ public class Payslip {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public double getSalary() {
+        return workHours * hourlyRate;
+    }
+
+    @Override
+    public String toString() {
+        return "Payslip{"
+                + "id=" + id
+                + ", workHours=" + workHours
+                + ", hourlyRate=" + hourlyRate
+                + ", date=" + date
+                + ", user=" + (user != null ? user.getFirstName() : null)
+                + ", salary=" + getSalary()
+                + '}';
     }
 }
