@@ -41,7 +41,8 @@ public class SecurityConfig {
                 .requestMatchers("/admin/**").permitAll()
                 .requestMatchers("/user-profile/**").permitAll()
                 .requestMatchers("/jobs/**").permitAll()
-                .requestMatchers("/api/documents/**").permitAll() // Candidates can view jobs
+                .requestMatchers("/api/documents/**").permitAll()
+                .requestMatchers("api/resumes/**").permitAll() // Candidates can view jobs
                 .anyRequest().authenticated()
                 )
                 .formLogin(form -> form.disable()) // ✅ Disable default login form

@@ -1,6 +1,9 @@
 package consult_america.demo.controller;
 
+import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,6 +27,8 @@ import consult_america.demo.model.Role;
 import consult_america.demo.model.User;
 import consult_america.demo.repository.RoleRepository;
 import consult_america.demo.repository.UserRepository;
+import consult_america.demo.service.EmailService;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
@@ -43,6 +48,9 @@ public class AuthController {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private EmailService emailService;
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
@@ -140,6 +148,58 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Logout failed", "details", e.getMessage()));
         }
+    }
+
+    // === Forgot Password Endpoint ===
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> payload) {
+        String email = payload.get("email");
+        Optional<User> userOpt = userRepository.findByEmail(email);
+
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.badRequest().body("No user found with that email.");
+        }
+
+        User user = userOpt.get();
+        String token = UUID.randomUUID().toString();
+        user.setResetToken(token);
+        user.setTokenExpiry(LocalDateTime.now().plusMinutes(30));
+        userRepository.save(user);
+
+        String resetLink = "http://localhost:4200/reset-password?token=" + token;
+
+        try {
+            emailService.sendResetPasswordEmail(email, resetLink);
+        } catch (MessagingException e) {
+            return ResponseEntity.internalServerError().body("Error sending email.");
+        }
+
+        return ResponseEntity.ok("Reset link sent to your email.");
+    }
+
+    // === Reset Password Endpoint ===
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> payload) {
+        String token = payload.get("token");
+        String newPassword = payload.get("newPassword");
+
+        System.out.println("Received token: " + token);
+        Optional<User> userOpt = userRepository.findByResetToken(token);
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.badRequest().body("Invalid reset token.");
+        }
+
+        User user = userOpt.get();
+        if (user.getTokenExpiry() == null || user.getTokenExpiry().isBefore(LocalDateTime.now())) {
+            return ResponseEntity.badRequest().body("Reset token has expired.");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setResetToken(null);
+        user.setTokenExpiry(null);
+        userRepository.save(user);
+
+        return ResponseEntity.ok(Map.of("message", "Password has been reset successfully."));
     }
 
 }

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Candidate Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fafafa;
+            padding: 20px;
+        }
+        .container {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
+            border-radius: 8px;
+        }
+        h2 {
+            color: #2c3e50;
+        }
+        .section-title {
+            color: #34495e;
+            margin-top: 20px;
+        }
+        .label {
+            font-weight: bold;
+        }
+        .value {
+            margin-bottom: 10px;
+        }
+        ul {
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Candidate Profile Summary</h2>
+
+    <div class="value"><span class="label">Name:</span> <span th:text="${firstName} + ' ' + ${lastName}">John Doe</span></div>
+    <div class="value"><span class="label">Email:</span> <span th:text="${email}">john@example.com</span></div>
+    <div class="value"><span class="label">Primary Phone:</span> <span th:text="${primaryPhone}">123-456-7890</span></div>
+    <div class="value"><span class="label">Secondary Phone:</span> <span th:text="${secondaryPhone}">N/A</span></div>
+    <div class="value"><span class="label">Primary Address:</span> <span th:text="${primaryAddress}">123 Main St</span></div>
+    <div class="value"><span class="label">Secondary Address:</span> <span th:text="${secondaryAddress}">N/A</span></div>
+    <div class="value"><span class="label">Experience:</span> <span th:text="${yearsOfExperience}">5</span> years</div>
+    <div class="value"><span class="label">Tech Stack:</span> <span th:text="${techStack}">Java, Angular, AWS</span></div>
+    <div class="value"><span class="label">Visa Status:</span> <span th:text="${visaStatus}">H1B</span></div>
+    <div class="value"><span class="label">Work Authorization:</span> <span th:text="${workAuthorization}">Yes</span></div>
+    <div class="value"><span class="label">Location:</span> <span th:text="${location}">New York, NY</span></div>
+    <div class="value"><span class="label">Employment Type:</span> <span th:text="${employmentType}">Full-Time</span></div>
+
+    <div class="section-title">Clients:</div>
+    <ul>
+        <li th:if="${clientNames != null}" th:each="client : ${clientNames}" th:text="${client}">Client A</li>
+    </ul>
+</div>
+</body>
+</html>

@@ -23,6 +23,9 @@ public class UserProfileDTO {
     private String secondaryPhone;
     private String techStack;
     private int yearsOfExperience;
+    private String employmentType;
+    private String workAuthorization;
+    private String visaStatus;
 
     public int getYearsOfExperience() {
         return yearsOfExperience;
@@ -134,6 +137,30 @@ public class UserProfileDTO {
 
     public void setPrimaryAddress(String primaryAddress) {
         this.primaryAddress = primaryAddress;
+    }
+
+    public String getEmploymentType() {
+        return employmentType;
+    }
+
+    public void setEmploymentType(String employmentType) {
+        this.employmentType = employmentType;
+    }
+
+    public String getWorkAuthorization() {
+        return workAuthorization;
+    }
+
+    public void setWorkAuthorization(String workAuthorization) {
+        this.workAuthorization = workAuthorization;
+    }
+
+    public String getVisaStatus() {
+        return visaStatus;
+    }
+
+    public void setVisaStatus(String visaStatus) {
+        this.visaStatus = visaStatus;
     }
 
 }

@@ -1,5 +1,6 @@
 package consult_america.demo.model;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -34,6 +35,9 @@ public class User {
     private String clientName1;
     private String clientName2;
     private String clientName3;
+    private String employmentType;
+    private String workAuthorization;
+    private String visaStatus;
 
     @Lob
     private String techStack;  // Use @Lob for longer text
@@ -52,6 +56,29 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Payslip> payslips;
+
+    @Column(name = "reset_token")
+    private String resetToken;
+
+    @Column(name = "token_expiry")
+    private LocalDateTime tokenExpiry;
+
+    // 🧾 Getters and Setters for new fields
+    public String getResetToken() {
+        return resetToken;
+    }
+
+    public void setResetToken(String resetToken) {
+        this.resetToken = resetToken;
+    }
+
+    public LocalDateTime getTokenExpiry() {
+        return tokenExpiry;
+    }
+
+    public void setTokenExpiry(LocalDateTime tokenExpiry) {
+        this.tokenExpiry = tokenExpiry;
+    }
 
     // Constructors
     public User() {
@@ -154,6 +181,14 @@ public class User {
         this.clientName3 = clientName3;
     }
 
+    public String getEmploymentType() {
+        return employmentType;
+    }
+
+    public void setEmploymentType(String employmentType) {
+        this.employmentType = employmentType;
+    }
+
     public String getTechStack() {
         return techStack;
     }
@@ -205,5 +240,21 @@ public class User {
     public static Object builder() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'builder'");
+    }
+
+    public String getWorkAuthorization() {
+        return workAuthorization;
+    }
+
+    public void setWorkAuthorization(String workAuthorization) {
+        this.workAuthorization = workAuthorization;
+    }
+
+    public String getVisaStatus() {
+        return visaStatus;
+    }
+
+    public void setVisaStatus(String visaStatus) {
+        this.visaStatus = visaStatus;
     }
 }

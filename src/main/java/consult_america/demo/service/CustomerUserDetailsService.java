@@ -56,6 +56,10 @@ public class CustomerUserDetailsService implements UserDetailsService {
         profile.setSecondaryPhone(dto.getSecondaryPhone());
         profile.setTechStack(dto.getTechStack());
         profile.setYearsOfExperience(dto.getYearsOfExperience());
+        profile.setEmploymentType(dto.getEmploymentType());
+        profile.setWorkAuthorization(dto.getWorkAuthorization());
+        profile.setVisaStatus(dto.getVisaStatus());
+
         return userRepository.save(profile);
     }
 }

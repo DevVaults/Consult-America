@@ -21,15 +21,19 @@ public class Job {
     private String contactEmail;
 
     private LocalDateTime postedAt;
+    private String clientName;
 
     private String postedBy; // Admin email or name
+    private String technologyStack;
 
     // Constructors
     public Job() {
     }
 
-    public Job(String title, String description, String location, String employmentType,
-            String salaryRange, String contactEmail, LocalDateTime postedAt, String postedBy) {
+    public Job(Long id, String title, String description, String location, String employmentType,
+            String salaryRange, String contactEmail, LocalDateTime postedAt, String postedBy, String clientName, String technologyStack) {
+
+        this.id = id;
         this.title = title;
         this.description = description;
         this.location = location;
@@ -38,6 +42,8 @@ public class Job {
         this.contactEmail = contactEmail;
         this.postedAt = postedAt;
         this.postedBy = postedBy;
+        this.clientName = clientName;
+        this.technologyStack = technologyStack;
     }
 
     // Getters and setters
@@ -104,5 +110,29 @@ public class Job {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getClientName() {
+        return clientName;
+    }
+
+    public void setClientName(String clientName) {
+        this.clientName = clientName;
+    }
+
+    public String getTechnologyStack() {
+        return technologyStack;
+    }
+
+    public void setTechnologyStack(String technologyStack) {
+        this.technologyStack = technologyStack;
     }
 }
