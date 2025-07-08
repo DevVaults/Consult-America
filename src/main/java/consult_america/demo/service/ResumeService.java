@@ -1,5 +1,6 @@
 package consult_america.demo.service;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
@@ -18,6 +19,7 @@ import consult_america.demo.model.ResumeDTO;
 import consult_america.demo.model.User;
 import consult_america.demo.repository.ResumeRepository;
 import consult_america.demo.repository.UserRepository;
+import jakarta.mail.MessagingException;
 
 @Service
 public class ResumeService {
@@ -25,9 +27,12 @@ public class ResumeService {
     private final ResumeRepository resumeRepository;
     private final UserRepository userRepository;
 
-    public ResumeService(ResumeRepository resumeRepository, UserRepository userRepository) {
+    private final EmailService emailService;
+
+    public ResumeService(ResumeRepository resumeRepository, UserRepository userRepository, EmailService emailService) {
         this.resumeRepository = resumeRepository;
         this.userRepository = userRepository;
+        this.emailService = emailService;
     }
 
     public Page<Resume> getAllResumes(Pageable pageable) {
@@ -143,6 +148,25 @@ public class ResumeService {
 
     public List<Resume> getResumesByEmail(String email) {
         return resumeRepository.findByEmailIgnoreCase(email.trim());
+    }
+
+    public void sendResumeProfileEmail(Long resumeId, String recipientEmail, String subject, String customMessage, String userEmail)
+            throws IOException, MessagingException {
+
+        Resume resume = resumeRepository.findById(resumeId)
+                .orElseThrow(() -> new RuntimeException("Resume not found"));
+
+        // try {
+        //     User user = userRepository.findByEmail(userEmail)
+        //             .orElseThrow(() -> new RuntimeException("Resume not found"));
+        // } catch (RuntimeException e) {
+        //     // TODO Auto-generated catch block
+        //     e.printStackTrace();
+        // }
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("Associated user not found"));
+
+        emailService.sendProfileEmailWithResume(user, resume, recipientEmail, subject, customMessage);
     }
 
 }

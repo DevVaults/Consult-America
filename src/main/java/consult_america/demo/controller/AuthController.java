@@ -68,7 +68,9 @@ public class AuthController {
 
         user.setRole(role);
         userRepository.save(user);
-        return ResponseEntity.ok("User registered successfully");
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(Map.of("Success", "User is Created Successfully"));
     }
 
     // @PostMapping("/login")

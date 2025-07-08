@@ -275,52 +275,23 @@ public class ResumeController {
     public ResponseEntity<?> sendProfileEmail(
             @PathVariable Long id,
             @RequestBody Map<String, String> payload) {
+
         String recipientEmail = payload.get("recipientEmail");
         String subject = payload.get("subject");
         String customMessage = payload.getOrDefault("customMessage", "");
-        return resumeService.getResumeById(id)
-                .map(resume -> {
-                    try {
-                        Map<String, Object> variables = new HashMap<>();
-                        variables.put("subject", subject);
-                        variables.put("candidate", Map.of(
-                                "name", resume.getName(),
-                                "email", resume.getEmail(),
-                                "contact", resume.getContact(),
-                                "summary", resume.getSummary() != null && !resume.getSummary().isBlank()
-                                ? resume.getSummary()
-                                : customMessage,
-                                "tags", resume.getTags()
-                        ));
+        String userEmail = payload.get("userEmail");
+        try {
+            resumeService.sendResumeProfileEmail(id, recipientEmail, subject, customMessage, userEmail);
 
-                        // Create a temporary file for resume attachment
-                        File tempFile = File.createTempFile("resume-", "-" + resume.getFileName());
-                        try (FileOutputStream fos = new FileOutputStream(tempFile)) {
-                            fos.write(resume.getData());
-                        }
+            return ResponseEntity.ok(Map.of(
+                    "message", "Email sent successfully",
+                    "to", recipientEmail
+            ));
 
-                        emailService.sendProfileEmail(
-                                recipientEmail,
-                                subject,
-                                variables,
-                                tempFile
-                        );
-
-                        return ResponseEntity.ok(Map.of(
-                                "message", "Email sent successfully",
-                                "to", recipientEmail
-                        ));
-
-                    } catch (Exception e) {
-                        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                .body(Map.of(
-                                        "error", "Failed to send email",
-                                        "details", e.getMessage()
-                                ));
-                    }
-                })
-                .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(Map.of("error", "Resume not found with ID: " + id)));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Failed to send email", "details", e.getMessage()));
+        }
     }
 
 }

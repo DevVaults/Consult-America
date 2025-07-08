@@ -115,7 +115,7 @@ public class UserProfileController {
             // ✅ Send email
             emailService.sendCandidateEmail(toEmail, subject, infoVars, attachments);
 
-            return ResponseEntity.ok("Email sent successfully.");
+            return ResponseEntity.ok(Map.of("message", "Email has been reset successfully."));
 
         } catch (MessagingException e) {
             e.printStackTrace();
