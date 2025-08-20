@@ -67,16 +67,21 @@ public class ResumeTagExtractionService {
 
     private List<String> simpleKeywordMatching(String text) {
         Set<String> skills = Set.of(
-                "Java", "Python", "JavaScript", "Spring", "Spring Boot", "React",
-                "SQL", "MySQL", "MSSQL", "MongoDB", "AWS", "Azure", "GCP",
-                "Docker", "Kubernetes", "Apache Kafka", "GitLab", "Jenkins",
-                "SonarQube", "Apigee", "Postman", "Swagger", "LIMS", "SAP ATTP",
-                "TraceLink", "ServiceNow", "Cucumber", "Jira", "Log4j",
-                "ETL", "Data Integrity", "Master Data Management", "Tableau", "Power BI",
-                "Serialization", "DSCSA", "EPCIS", "GS1", "21 CFR Part 11",
-                "GxP", "CAPA", "SOP Development", "IQ", "OQ", "PQ",
-                "Validation", "Audit", "Risk Assessment", "Compliance",
-                "Communication", "Leadership"
+               "Java", "Python", "JavaScript", "TypeScript", "C#", "C++", "C", "R", "SQL",
+"MySQL", "MSSQL", "PostgreSQL", "MongoDB", "Oracle", "Power BI", "Tableau",
+"React", "Angular", "Vue", "Node.js", "Spring", "Spring Boot", "WinForms", "WPF", "Flutter", "Android Native",
+".NET", "Docker", "Kubernetes", "VMware", "ESXi", "vSphere", "Hyper-V", "Containers",
+"AWS", "Azure", "Google Cloud", "GCP", "EC2", "S3", "RDS", "Lambda", "IAM", "VPC", "EKS", "GCE", "GCS", "GKE", "Vertex AI",
+"Terraform", "Azure DevOps", "CI/CD", "PowerShell", "Bash", "Git", "GitHub", "GitLab", "Jenkins", "IaC", "SonarQube",
+"Apache Kafka", "RabbitMQ", "Azure Service Bus", "Amazon MQ", "PubNub",
+"Postman", "Swagger", "API Gateway", "SignalR", "ETL", "Data Integrity", "Master Data Management", "Serialization",
+"TCP/IP", "Routing", "Switching", "VPN", "Network Security", "Firewall", "IDS/IPS", "Network Design", "Performance Optimization",
+"CISM", "CISSP", "Cloud Security Architecture", "GxP", "DSCSA", "EPCIS", "GS1", "21 CFR Part 11", "CAPA", "SOP Development",
+"Validation", "IQ", "OQ", "PQ", "Audit", "Risk Assessment", "Compliance",
+"Machine Learning", "Generative AI", "Agile", "Scrum", "Project Management", "TOGAF",
+"Communication", "Leadership", "Problem Solving", "Mentorship", "Cloud Governance", "Backup and Disaster Recovery"
+
+
         );
 
         return skills.stream()
