@@ -39,7 +39,7 @@ import jakarta.mail.MessagingException;
 
 @RestController
 @RequestMapping("/user-profile")
-@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
+@CrossOrigin(origins = "*")
 public class UserProfileController {
 
     private final CustomerUserDetailsService service;

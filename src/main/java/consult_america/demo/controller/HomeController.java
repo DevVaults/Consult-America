@@ -1,16 +1,14 @@
 package consult_america.demo.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 public class HomeController {
 
-    // @GetMapping("/")
-    // public String home() {
-    //     return "index"; // returns index.html from templates/
-    // }
-    // @GetMapping("/login")
-    // public String loginPage() {
-    //     return "login"; // returns login.html from templates/
-    // }
+@RequestMapping(value = {"/{path:[^\\.]*}", "/**/{path:[^\\.]*}"})
+    public String redirect() {
+        // Forward to index.html for Angular routing
+        return "forward:/index.html";
+    }
 }

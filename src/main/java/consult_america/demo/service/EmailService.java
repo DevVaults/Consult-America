@@ -65,7 +65,7 @@ public class EmailService {
         mailSender.send(message);
     }
 
-    public void sendProfileEmailWithResume(User user, Resume resume, String recipientEmail, String subject, String customMessage)
+    public void sendProfileEmailWithResume( Resume resume, String recipientEmail, String subject, String customMessage)
             throws IOException, MessagingException {
 
         // ✅ Prepare candidate map
@@ -77,8 +77,8 @@ public class EmailService {
                 ? resume.getSummary()
                 : customMessage);
         candidate.put("tags", resume.getTags());
-        candidate.put("visaStatus", user.getVisaStatus());
-        candidate.put("location", user.getPrimaryAddress());
+        // candidate.put("visaStatus", user.getVisaStatus());
+        // candidate.put("location", user.getPrimaryAddress());
         candidate.put("availability", "Available Immediately"); // Customize if stored
 
         Map<String, Object> variables = new HashMap<>();
@@ -158,6 +158,7 @@ public class EmailService {
         message.setTo(to);
         message.setSubject(subject);
         message.setText(body);
+
         mailSender.send(message);
     }
 

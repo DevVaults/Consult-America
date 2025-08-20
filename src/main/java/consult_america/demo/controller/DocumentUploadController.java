@@ -20,7 +20,7 @@ import consult_america.demo.model.DocumentUpload;
 
 @RestController
 @RequestMapping("/api/documents")
-@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
+@CrossOrigin(origins = "*")
 public class DocumentUploadController {
 
     @Autowired

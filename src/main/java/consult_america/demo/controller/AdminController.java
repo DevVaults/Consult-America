@@ -63,6 +63,7 @@ public class AdminController {
         dto.setName(resume.getName());
         dto.setEmail(resume.getEmail());
         dto.setContact(resume.getContact());
+        
         dto.setUploadedAt(resume.getUploadedAt());
         dto.setFileName(resume.getFileName());
         dto.setFileType(resume.getFileType().orElse(null));
@@ -103,6 +104,7 @@ public class AdminController {
             @RequestParam("name") String name,
             @RequestParam(value = "email", required = false) String email,
             @RequestParam(value = "contact", required = false) String contact,
+            @RequestParam(value = "title", required = false) String title,
             @RequestParam(value = "summary", required = false) String summary
     ) {
 

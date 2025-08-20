@@ -163,10 +163,10 @@ public class ResumeService {
         //     // TODO Auto-generated catch block
         //     e.printStackTrace();
         // }
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new RuntimeException("Associated user not found"));
+        // User user = userRepository.findByEmail(userEmail)
+        //         .orElseThrow(() -> new RuntimeException("Associated user not found"));
 
-        emailService.sendProfileEmailWithResume(user, resume, recipientEmail, subject, customMessage);
+        emailService.sendProfileEmailWithResume( resume, recipientEmail, subject, customMessage);
     }
 
 }
