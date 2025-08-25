@@ -111,6 +111,7 @@ public class ResumeService {
         dto.setFileSize(resume.getFileSize());
         dto.setSummary(resume.getSummary());
         dto.setTags(resume.getTags());
+        
         // You can set downloadUrl in controller or here if preferred
         return dto;
     }

@@ -77,8 +77,9 @@ public class EmailService {
                 ? resume.getSummary()
                 : customMessage);
         candidate.put("tags", resume.getTags());
-        // candidate.put("visaStatus", user.getVisaStatus());
-        // candidate.put("location", user.getPrimaryAddress());
+         candidate.put("visaStatus", resume.getVisaStatus());
+         candidate.put("linkedln", resume.getlinkedln());
+
         candidate.put("availability", "Available Immediately"); // Customize if stored
 
         Map<String, Object> variables = new HashMap<>();
@@ -132,7 +133,7 @@ public class EmailService {
 
         String htmlContent = templateEngine.process("candidate-profile", context);
 
-        helper.setFrom("hannankaimkhani96@gmail.com");
+        helper.setFrom("hr@consultamerica.com");
         helper.setTo(to);
         helper.setSubject(subject);
         helper.setText(htmlContent, true);

@@ -67,7 +67,10 @@ public class ResumeController {
             @RequestParam("name") String name,
             @RequestParam(value = "email", required = false) String email,
             @RequestParam(value = "contact", required = false) String contact,
-            @RequestParam(value = "summary", required = false) String summary) {
+            @RequestParam(value = "summary", required = false) String summary,
+            @RequestParam(value = "title", required = false) String title,
+              @RequestParam(value = "visaStats", required = false) String visaStatus,
+                @RequestParam(value = "linkedln", required = false) String linkedln) {
 
         try {
             // Validate file
@@ -86,6 +89,7 @@ public class ResumeController {
             resume.setName(name);
             resume.setEmail(email);
             resume.setContact(contact);
+            resume.setTitle(title);
             resume.setFileName(file.getOriginalFilename());
             resume.setFileType(file.getContentType());
             resume.setFileSize(file.getSize());
@@ -93,7 +97,12 @@ public class ResumeController {
             resume.setUploadedAt(LocalDateTime.now());
             resume.setSummary(summary);
             resume.setTags(tags);
+            resume.setVisaStatus(visaStatus);
+            resume.setlinkedln(linkedln);
 
+
+System.out.println("Resume data: " + resume);
+System.out.println("Resume data: " + resume.getTitle());
             Resume savedResume = resumeService.saveResume(resume);
 
             // Build response DTO
@@ -254,11 +263,14 @@ public class ResumeController {
         dto.setName(resume.getName());
         dto.setEmail(resume.getEmail());
         dto.setContact(resume.getContact());
+        dto.setTitle(resume.getTitle());
         dto.setUploadedAt(resume.getUploadedAt());
         dto.setFileName(resume.getFileName());
         dto.setFileType(resume.getFileType().orElse(null));
         dto.setFileSize(resume.getFileSize());
         dto.setTags(resume.getTags());
+        dto.setVisaStatus(resume.getVisaStatus());
+        dto.setLinkedln(resume.getlinkedln());
 
         // Set download URL
         String downloadUrl = ServletUriComponentsBuilder.fromCurrentContextPath()

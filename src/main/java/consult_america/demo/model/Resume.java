@@ -39,7 +39,10 @@ public class Resume {
 
     private LocalDateTime uploadedAt;
     private LocalDateTime createdAt = LocalDateTime.now();
-
+    private String title; 
+    private String visaStatus;
+    private String linkedln;
+    
     @ElementCollection
     @CollectionTable(name = "resume_tags", joinColumns = @JoinColumn(name = "resume_id"))
     @Column(name = "tag")
@@ -156,6 +159,30 @@ public class Resume {
 
     public void setUploadedBy(String name) {
         this.uploadedBy = name;
+    }
+
+  public String getTitle() {   // <-- Getter
+        return title;
+    }
+
+    public void setTitle(String title) {  // <-- Setter
+        this.title = title;
+    }
+
+      public String getVisaStatus() {   // <-- Getter
+        return visaStatus;
+    }
+
+    public void setVisaStatus(String visaStatus) {  // <-- Setter
+        this.visaStatus = visaStatus;
+    }
+
+       public String getlinkedln() {   // <-- Getter
+        return linkedln;
+    }
+
+    public void setlinkedln(String linkedln) {  // <-- Setter
+        this.linkedln = linkedln;
     }
 
 }

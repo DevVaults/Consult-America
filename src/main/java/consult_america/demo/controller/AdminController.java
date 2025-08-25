@@ -69,6 +69,8 @@ public class AdminController {
         dto.setFileType(resume.getFileType().orElse(null));
         dto.setFileSize(resume.getFileSize());
         dto.setTags(resume.getTags());
+        dto.setVisaStatus(resume.getVisaStatus());
+        dto.setLinkedln(resume.getlinkedln());
 
         // Set download URL
         String downloadUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -105,7 +107,9 @@ public class AdminController {
             @RequestParam(value = "email", required = false) String email,
             @RequestParam(value = "contact", required = false) String contact,
             @RequestParam(value = "title", required = false) String title,
-            @RequestParam(value = "summary", required = false) String summary
+            @RequestParam(value = "summary", required = false) String summary,
+            @RequestParam(value = "visaStatus", required = false) String visaStatus,
+            @RequestParam(value = "linkedln", required = false) String linkedln
     ) {
 
         try {
@@ -134,7 +138,11 @@ public class AdminController {
             resume.setSummary(summary);
             resume.setTags(tags);
             resume.setUploadedBy(auth.getName());
-
+            resume.setTitle(title);
+            resume.setVisaStatus(visaStatus);
+            resume.setlinkedln(linkedln);
+            System.out.println("visaStatus data: " + visaStatus);
+            System.out.println("linkedln data: " + linkedln);
             Resume savedResume = resumeService.saveResume(resume);
 
             // Build response DTO

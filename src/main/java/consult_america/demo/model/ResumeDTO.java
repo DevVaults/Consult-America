@@ -9,6 +9,7 @@ public class ResumeDTO {
     private String name;
     private String email;
     private String contact;
+    private String title; // New field for resume title
     private String fileName;
     private String fileType;
     private Long fileSize;
@@ -16,6 +17,8 @@ public class ResumeDTO {
     private List<String> tags;
     private String downloadUrl;
     private String summary;
+    private String visaStatus; // New field for visa status
+    private String linkedln; // New field for LinkedIn profile
 
     // === Constructors ===
 
@@ -24,7 +27,7 @@ public class ResumeDTO {
 
     public ResumeDTO(Long id, String name, String email, String contact,
                      String fileName, String fileType, Long fileSize,
-                     LocalDateTime uploadedAt, List<String> tags, String summary) {
+                     LocalDateTime uploadedAt, List<String> tags, String summary,String title,String visaStatus, String linkedln) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -35,6 +38,9 @@ public class ResumeDTO {
         this.uploadedAt = uploadedAt;
         this.tags = tags;
         this.summary = summary;
+        this.title = title;
+        this.visaStatus = visaStatus;
+        this.linkedln = linkedln; // Initialize the title
     }
 
     // === Getters and Setters ===
@@ -83,6 +89,15 @@ public class ResumeDTO {
 
     public void setSummary(String summary) { this.summary = summary; }
 
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+
+
+    public String getVisaStatus() { return visaStatus; }
+    public void setVisaStatus(String visaStatus) { this.visaStatus = visaStatus; }
+    public String getLinkedln() { return linkedln; }
+    public void setLinkedln(String linkedln) { this.linkedln = linkedln; }
+
     @Override
     public String toString() {
         return "ResumeDTO{" +
@@ -97,6 +112,9 @@ public class ResumeDTO {
                 ", tags=" + tags +
                 ", downloadUrl='" + downloadUrl + '\'' +
                 ", summary='" + summary + '\'' +
+                ", title='" + title + '\'' +
+                ", visaStatus='" + visaStatus + '\'' +
+                ", linkedln='" +   + '\'' + // Include title in toString
                 '}';
     }
 }
