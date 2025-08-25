@@ -209,7 +209,7 @@ public class AdminController {
                             fos.write(resume.getData());
                         }
 
-                        emailService.sendProfileEmail(recipientEmail, subject, variables, tempFile);
+                        emailService.sendProfileEmail(recipientEmail, subject, variables, tempFile,resume.getEmail());
                         return ResponseEntity.ok(Map.of("message", "Email sent", "to", recipientEmail));
 
                     } catch (Exception e) {

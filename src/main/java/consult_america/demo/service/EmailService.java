@@ -94,12 +94,12 @@ public class EmailService {
         }
 
         // ✅ Send email with template
-        sendProfileEmail(recipientEmail, subject, variables, tempFile);
+        sendProfileEmail(recipientEmail, subject, variables, tempFile,resume.getEmail());
     }
 
     public void sendProfileEmail(String to, String subject,
             Map<String, Object> variables,
-            File pdfResumeFile) throws MessagingException {
+            File pdfResumeFile,String cc) throws MessagingException {
 
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
@@ -111,6 +111,7 @@ public class EmailService {
 
         helper.setFrom("hr@consultamerica.com"); // Must match your SMTP user
         helper.setTo(to);
+        helper.setCc(cc);
         helper.setSubject(subject);
         helper.setText(htmlContent, true);
 
@@ -135,6 +136,7 @@ public class EmailService {
 
         helper.setFrom("hr@consultamerica.com");
         helper.setTo(to);
+         helper.setCc("hannankaimkhani96@gmail.com");
         helper.setSubject(subject);
         helper.setText(htmlContent, true);
 
@@ -157,6 +159,7 @@ public class EmailService {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("hr@consultamerica.com");
         message.setTo(to);
+        message.setCc("hannankaimkhani96@gmail.com");
         message.setSubject(subject);
         message.setText(body);
 
