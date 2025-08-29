@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -99,6 +100,76 @@ public class AdminController {
                 .collect(Collectors.toList());
         return ResponseEntity.ok(resumeDTOs);
     }
+
+@PostMapping("/update/{id}")
+public ResponseEntity<?> updateResume(
+        @PathVariable Long id,
+        @RequestParam(value = "file", required = false) MultipartFile file,
+        @RequestParam("name") String name,
+        @RequestParam(value = "email", required = false) String email,
+        @RequestParam(value = "contact", required = false) String contact,
+        @RequestParam(value = "title", required = false) String title,
+        @RequestParam(value = "summary", required = false) String summary,
+        @RequestParam(value = "visaStatus", required = false) String visaStatus,
+        @RequestParam(value = "linkedln", required = false) String linkedln
+) {
+    try {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not authenticated");
+        }
+
+        // ✅ Check if resume exists
+        Resume existingResume = resumeService.getResumeById(id)
+                .orElseThrow(() -> new RuntimeException("Resume not found with id: " + id));
+
+        // ✅ Update only fields that are provided
+        if (name != null) existingResume.setName(name);
+        if (email != null) existingResume.setEmail(email);
+        if (contact != null) existingResume.setContact(contact);
+        if (title != null) existingResume.setTitle(title);
+        if (summary != null) {
+            existingResume.setSummary(summary);
+            List<String> tags = tagExtractionService.extractTagsFromText(summary);
+            existingResume.setTags(tags);
+        }
+        if (visaStatus != null) existingResume.setVisaStatus(visaStatus);
+        if (linkedln != null) existingResume.setlinkedln(linkedln);
+
+        // ✅ If a new file is uploaded, replace it
+        if (file != null && !file.isEmpty()) {
+            existingResume.setFileName(file.getOriginalFilename());
+            existingResume.setFileType(file.getContentType());
+            existingResume.setFileSize(file.getSize());
+            existingResume.setData(file.getBytes());
+        }
+
+        //existingResume.setUpdatedAt(LocalDateTime.now()); // add updated timestamp
+        existingResume.setUploadedBy(auth.getName());     // track who updated it
+
+        Resume updatedResume = resumeService.saveResume(existingResume);
+
+        // Build DTO for response
+        ResumeDTO resumeDTO = mapToResumeDTO(updatedResume);
+        String downloadUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/employee/resumes/")
+                .path(updatedResume.getId().toString())
+                .path("/download")
+                .toUriString();
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("resume", resumeDTO);
+        response.put("downloadUrl", downloadUrl);
+        response.put("message", "Resume updated successfully");
+
+        return ResponseEntity.ok(response);
+
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error updating resume: " + e.getMessage());
+    }
+}
+
 
     @PostMapping("/upload")
     public ResponseEntity<?> uploadResume(
