@@ -128,11 +128,11 @@ public ResponseEntity<?> updateResume(
         if (email != null) existingResume.setEmail(email);
         if (contact != null) existingResume.setContact(contact);
         if (title != null) existingResume.setTitle(title);
-        if (summary != null) {
-            existingResume.setSummary(summary);
-            List<String> tags = tagExtractionService.extractTagsFromText(summary);
-            existingResume.setTags(tags);
-        }
+        // if (summary != null) {
+        //     existingResume.setSummary(summary);
+        //     List<String> tags = tagExtractionService.extractTagsFromText(summary);
+        //     existingResume.setTags(tags);
+        // }
         if (visaStatus != null) existingResume.setVisaStatus(visaStatus);
         if (linkedln != null) existingResume.setlinkedln(linkedln);
 
