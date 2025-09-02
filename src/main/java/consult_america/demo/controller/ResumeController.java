@@ -272,6 +272,7 @@ System.out.println("Resume data: " + resume.getTitle());
         dto.setTags(resume.getTags());
         dto.setVisaStatus(resume.getVisaStatus());
         dto.setLinkedln(resume.getlinkedln());
+        dto.setSummary(resume.getSummary());
 
         // Set download URL
         String downloadUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
