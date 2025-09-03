@@ -292,7 +292,7 @@ System.out.println("Resume data: " + resume.getTitle());
 
         String recipientEmail = payload.get("recipientEmail");
         String subject = payload.get("subject");
-        String customMessage = payload.getOrDefault("customMessage", "");
+        String customMessage = payload.get("customMessage");
         String userEmail = payload.get("userEmail");
         try {
             resumeService.sendResumeProfileEmail(id, recipientEmail, subject, customMessage, userEmail);
@@ -336,11 +336,11 @@ public ResponseEntity<?> updateResume(
         if (email != null) existingResume.setEmail(email);
         if (contact != null) existingResume.setContact(contact);
         if (title != null) existingResume.setTitle(title);
-        // if (summary != null) {
-        //     existingResume.setSummary(summary);
-        //     List<String> tags = tagExtractionService.extractTagsFromText(summary);
-        //     existingResume.setTags(tags);
-        // }
+        if (summary != null) {
+            existingResume.setSummary(summary);
+            List<String> tags = tagExtractionService.extractTagsFromText(summary);
+            existingResume.setTags(tags);
+        }
         if (visaStatus != null) existingResume.setVisaStatus(visaStatus);
         if (linkedln != null) existingResume.setlinkedln(linkedln);
 
