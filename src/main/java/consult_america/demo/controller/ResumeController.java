@@ -34,11 +34,13 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.security.core.Authentication;
 import consult_america.demo.model.Resume;
 import consult_america.demo.model.ResumeDTO;
+import consult_america.demo.model.SentEmail;
 import consult_america.demo.model.User;
 import consult_america.demo.repository.UserRepository;
 import consult_america.demo.service.EmailService;
 import consult_america.demo.service.ResumeService;
 import consult_america.demo.service.ResumeTagExtractionService;
+import consult_america.demo.service.SentEmailService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -49,17 +51,19 @@ public class ResumeController {
     private final ResumeTagExtractionService tagExtractionService;
     private final EmailService emailService;
     private final UserRepository userRepository;
+    private final SentEmailService sentEmailService;
     // private final FileTextExtractor fileExtractor;
 
     @Autowired
     public ResumeController(ResumeService resumeService,
-            ResumeTagExtractionService tagExtractionService, EmailService emailService, UserRepository userRepository
+            ResumeTagExtractionService tagExtractionService, EmailService emailService, UserRepository userRepository,SentEmailService sentEmailService
     /*, FileTextExtractor fileExtractor*/) {
         this.resumeService = resumeService;
         this.tagExtractionService = tagExtractionService;
         this.emailService = emailService;
         this.userRepository = userRepository;
         // this.fileExtractor = fileExtractor;
+        this.sentEmailService = sentEmailService;
     }
 
     @PostMapping("/upload")
@@ -377,5 +381,28 @@ public ResponseEntity<?> updateResume(
                 .body("Error updating resume: " + e.getMessage());
     }
 }
+
+
+
+
+    
+
+    @PostMapping("/api/sent-emails")
+    public ResponseEntity<?> saveSentEmail(@RequestBody SentEmail email) {
+        // if client didn't provide date, set server-side timestamp
+        if (email.getDate() == null) {
+            email.setDate(LocalDateTime.now());
+        }
+        System.out.println("Received SentEmail: " + email);
+
+        SentEmail saved = sentEmailService.save(email);
+        return ResponseEntity.ok(saved);
+    }
+
+
+    @GetMapping("/api/sent-emails")
+    public ResponseEntity<List<SentEmail>> getAll() {
+        return ResponseEntity.ok(sentEmailService.findAll());
+    }
 
 }

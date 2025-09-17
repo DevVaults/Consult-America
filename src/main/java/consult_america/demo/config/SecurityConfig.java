@@ -42,7 +42,8 @@ public class SecurityConfig {
                 .requestMatchers("/user-profile/**").permitAll()
                 .requestMatchers("/jobs/**").permitAll()
                 .requestMatchers("/api/documents/**").permitAll()
-                .requestMatchers("api/resumes/**").permitAll() // Candidates can view jobs
+                .requestMatchers("api/resumes/**").permitAll()
+                  // Candidates can view jobs
                 .anyRequest().authenticated()
                 )
                 .formLogin(form -> form.disable()) // ✅ Disable default login form
@@ -67,7 +68,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://192.168.0.155:9090/demo-0.0.1-SNAPSHOT"));
+        config.setAllowedOrigins(List.of("http://localhost:4200"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
