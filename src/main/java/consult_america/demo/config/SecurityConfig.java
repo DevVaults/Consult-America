@@ -43,6 +43,8 @@ public class SecurityConfig {
                 .requestMatchers("/jobs/**").permitAll()
                 .requestMatchers("/api/documents/**").permitAll()
                 .requestMatchers("api/resumes/**").permitAll()
+                .requestMatchers("candidates/**").permitAll()
+                .requestMatchers("/applicants/**").permitAll() // ✅ Applicants can manage their profiles
                   // Candidates can view jobs
                 .anyRequest().authenticated()
                 )
